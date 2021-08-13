@@ -1,7 +1,7 @@
 <template>
-	<div class="home">
+	<div class="favourites">
 		<Header />
-		<h1>This is a Home page</h1>
+		<h1>This is a Favourites page</h1>
 	</div>
 </template>
 
@@ -9,7 +9,7 @@
 import Header from "../components/Header"
 
 export default {
-	name: "Home",
+	name: "Favourites",
 
 	components: {
 		Header,
