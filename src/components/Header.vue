@@ -2,11 +2,6 @@
 	<div class="header">
 		<v-app-bar dense flat color="#22d4ad">
 			<v-toolbar-title>Beans Love Beers</v-toolbar-title>
-			<!-- <el-radio-group :change="switchLang" v-model="lang" size="mini">
-				<el-radio-button label="ru">Ru</el-radio-button>
-				<el-radio-button label="ua">Ua</el-radio-button>
-				<el-radio-button label="en">Eng</el-radio-button>
-			</el-radio-group> -->
 
 			<div class="selectContainer">
 				<v-select
@@ -53,8 +48,27 @@ export default {
 	float: right !important;
 }
 .v-input.langSelector {
-	width: 60px;
+	width: 47px;
 	text-transform: uppercase;
+
+	.v-input__slot {
+		margin-bottom: 0;
+
+		.v-select__selection--comma {
+			margin: 0;
+		}
+
+		#input-10 {
+			max-width: 0;
+		}
+
+		.v-input__append-inner {
+			padding-left: 0;
+		}
+	}
+}
+.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+	border-color: white !important;
 }
 .theme--light.v-select .v-select__selections {
 	color: white !important;
