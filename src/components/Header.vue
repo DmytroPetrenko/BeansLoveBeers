@@ -1,7 +1,7 @@
 <template>
 	<div class="header">
 		<v-app-bar dense flat color="#22d4ad">
-			<v-toolbar-title>Beans Love Beers</v-toolbar-title>
+			<v-toolbar-title>{{ $t("title") }}</v-toolbar-title>
 
 			<div class="selectContainer">
 				<v-select
@@ -9,11 +9,11 @@
 					class="langSelector"
 					:items="langs"
 					:value="langs[0]"
-				></v-select>
+				/>
 			</div>
 			<v-tabs v-model="activeTab">
 				<v-tab v-for="tab in tabs" :key="tab.name" :to="{ name: tab.name }">
-					{{ $t(`menu.${tab.localName}`) }}
+					{{ tab.value }}
 				</v-tab>
 			</v-tabs>
 		</v-app-bar>
@@ -24,13 +24,18 @@
 export default {
 	data: () => ({
 		activeTab: "",
-		tabs: [
-			{ name: "Home", localName: "home" },
-			{ name: "Favourites", localName: "favourites" },
-		],
+
 		langs: ["en", "ru"],
 		lang: "en",
 	}),
+	computed: {
+		tabs() {
+			return [
+				{ name: "Home", value: this.$t("menu.home") },
+				{ name: "Favourites", value: this.$t("menu.favourites") },
+			]
+		},
+	},
 	watch: {
 		lang() {
 			this.$i18n.locale = this.lang
