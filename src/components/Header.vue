@@ -3,13 +3,15 @@
 		<v-app-bar dense flat color="#22d4ad">
 			<v-toolbar-title>{{ $t("title") }}</v-toolbar-title>
 
-			<div class="selectContainer">
+			<div class="selectContainer" ref="lang">
 				<v-select
 					v-model="lang"
 					class="langSelector"
 					:items="langs"
 					:value="langs[0]"
-				/>
+					:attach="$refs.lang"
+				>
+				</v-select>
 			</div>
 			<v-tabs v-model="activeTab">
 				<v-tab v-for="tab in tabs" :key="tab.name" :to="{ name: tab.name }">
@@ -44,15 +46,24 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.selectContainer {
+<style lang="scss" scoped>
+.v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined) {
+	z-index: 2 !important;
+}
+::v-deep .selectContainer {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	padding-top: 10px;
 	float: right !important;
+	.v-menu__content {
+		border: none;
+		box-shadow: none !important;
+		top: 30px !important;
+		left: auto !important;
+	}
 }
-.v-input.langSelector {
+::v-deep .v-input.langSelector {
 	width: 47px;
 	text-transform: uppercase;
 
@@ -72,37 +83,36 @@ export default {
 		}
 	}
 }
-.theme--light.v-text-field > .v-input__control > .v-input__slot:before {
+::v-deep
+	.theme--light.v-text-field
+	> .v-input__control
+	> .v-input__slot:before {
 	border-color: white !important;
 }
-.theme--light.v-select .v-select__selections {
+::v-deep .theme--light.v-select .v-select__selections {
 	color: white !important;
 }
-.theme--light.v-icon {
+::v-deep .theme--light.v-icon {
 	color: white !important;
 }
 
 .v-menu__content {
-	border: none;
-	box-shadow: none !important;
-	top: 30px !important;
-	color: white !important;
-	text-transform: uppercase;
 	.v-list {
 		background-color: #22d4ad !important;
-		.v-list-item__content {
+		::v-deep.v-list-item__content {
+			text-transform: uppercase;
 			color: white !important;
 		}
 	}
 }
-.v-toolbar__title {
+::v-deep .v-toolbar__title {
 	width: 200px;
 	color: white;
 }
-.v-tabs {
+::v-deep.v-tabs {
 	width: auto !important;
 }
-.v-tabs-bar {
+::v-deep .v-tabs-bar {
 	float: right !important;
 
 	.v-tabs-slider {
