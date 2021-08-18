@@ -1,8 +1,13 @@
 import axios from "axios"
 const state = () => ({
 	all: [],
+	foundProducts: [],
+	forShow: [],
 	page: 1,
 	favourites: [],
+	isLastResponse: false,
+	perPage: 24,
+	mode: "all",
 })
 
 const getters = {
@@ -15,27 +20,39 @@ const getters = {
 }
 
 const actions = {
-	getProducts({ state, commit }) {
-		axios
-			.get(`https://api.punkapi.com/v2/beers?page=${state.page}&per_page=9`)
-			.then((response) => {
-				commit("increasePage")
-				commit("increaseItems", response.data)
-			})
-			.catch((error) => console.log(error))
+	async axiosGetProducts({ state, commit }) {
+		try {
+			const response = await axios.get(
+				`https://api.punkapi.com/v2/beers?page=${state.page}&per_page=${state.perPage}`
+			)
+			if (response.data.length < state.perPage) {
+				commit("setIsLastResponse", true)
+			}
+			commit("increasePage")
+			commit("increaseItems", response.data)
+		} catch (error) {
+			console.log(error)
+		}
 	},
 	addToFavourites({ commit }, product) {
-		commit("addToFavourites", product)
+		commit("addToFavouritesArray", product)
 	},
 	removeFromFavourites({ commit }, productId) {
-		commit("removeFromFavourites", productId)
+		commit("removeFromFavouritesArray", productId)
 	},
-	searchByName({ commit }, input) {
-		axios
-			.get(`https://api.punkapi.com/v2/beers?beer_name=${input}`)
-			.then((response) => {
-				commit("searchByName", response.data)
-			})
+	async axiosGetByName({ commit }, input) {
+		try {
+			const response = await axios.get(
+				`https://api.punkapi.com/v2/beers?beer_name=${input}`
+			)
+			commit("setIsLastResponse", false)
+			commit("searchByName", response.data)
+		} catch (error) {
+			console.log(error)
+		}
+	},
+	changeMode({ commit }, mode) {
+		commit("changeForShowValue", mode)
 	},
 }
 
@@ -45,17 +62,32 @@ const mutations = {
 	},
 	increaseItems(state, data) {
 		state.all = [...state.all, ...data]
+		if (state.mode === "all") {
+			state.forShow = state.all
+		}
 	},
-	addToFavourites(state, product) {
+	addToFavouritesArray(state, product) {
 		state.favourites.push(product)
 	},
-	removeFromFavourites(state, productId) {
+	removeFromFavouritesArray(state, productId) {
 		state.favourites = state.favourites.filter(
 			(product) => product.id !== productId
 		)
 	},
 	searchByName(state, data) {
-		state.all = data
+		state.foundProducts = data
+		if (state.mode === "foundProducts") {
+			state.forShow = data
+		}
+	},
+	setIsLastResponse(state, value) {
+		state.isLastResponse = value
+	},
+	changeForShowValue(state, mode) {
+		state.mode = mode
+		mode === "all"
+			? (state.forShow = state.all)
+			: (state.forShow = state.foundProducts)
 	},
 }
 

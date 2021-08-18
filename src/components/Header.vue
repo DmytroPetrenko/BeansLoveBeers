@@ -10,14 +10,33 @@
 					:items="langs"
 					:value="langs[0]"
 					:attach="$refs.lang"
-				>
-				</v-select>
+				/>
 			</div>
-			<v-tabs v-model="activeTab">
+			<v-tabs class="desktopTabs" v-model="activeTab">
 				<v-tab v-for="tab in tabs" :key="tab.name" :to="{ name: tab.name }">
 					{{ tab.value }}
 				</v-tab>
 			</v-tabs>
+
+			<div class="mobileTabs">
+				<v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+				<v-navigation-drawer v-model="drawer" absolute temporary app>
+					<v-list nav dense>
+						<v-list-item-group v-model="tabs" active-class="asd">
+							<v-list-item
+								v-for="tab in tabs"
+								:key="tab.name"
+								:to="{ name: tab.name }"
+							>
+								<v-list-item-icon>
+									<v-icon>{{ tab.icon }}</v-icon>
+								</v-list-item-icon>
+								<v-list-item-title>{{ tab.value }}</v-list-item-title>
+							</v-list-item>
+						</v-list-item-group>
+					</v-list>
+				</v-navigation-drawer>
+			</div>
 		</v-app-bar>
 	</div>
 </template>
@@ -26,15 +45,19 @@
 export default {
 	data: () => ({
 		activeTab: "",
-
 		langs: ["en", "ru"],
 		lang: "en",
+		drawer: false,
 	}),
 	computed: {
 		tabs() {
 			return [
-				{ name: "Home", value: this.$t("menu.home") },
-				{ name: "Favourites", value: this.$t("menu.favourites") },
+				{ name: "Home", value: this.$t("menu.home"), icon: "mdi-home" },
+				{
+					name: "Favourites",
+					value: this.$t("menu.favourites"),
+					icon: "mdi-account",
+				},
 			]
 		},
 	},
@@ -47,6 +70,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.asd {
+	color: #22d4ad !important;
+}
 .v-sheet.v-app-bar.v-toolbar:not(.v-sheet--outlined) {
 	z-index: 2 !important;
 }
@@ -106,8 +132,8 @@ export default {
 	}
 }
 ::v-deep .v-toolbar__title {
-	width: 200px;
 	color: white;
+	margin-right: 10px;
 }
 ::v-deep.v-tabs {
 	width: auto !important;
@@ -127,6 +153,26 @@ export default {
 		text-transform: none !important;
 		color: #d9d9d9 !important;
 		padding: 0 10px;
+	}
+}
+.mobileTabs {
+	display: none;
+}
+
+@media screen and (max-width: 496px) {
+	.desktopTabs {
+		display: none;
+	}
+	.mobileTabs {
+		display: block;
+		margin-left: auto;
+		margin-right: 0;
+		.v-navigation-drawer {
+			background-color: #22d4ad !important;
+			.v-list-item__title {
+				color: white !important;
+			}
+		}
 	}
 }
 </style>

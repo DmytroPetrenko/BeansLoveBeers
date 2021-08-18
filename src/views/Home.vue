@@ -2,11 +2,15 @@
 	<div class="home">
 		<Header />
 		<Search @setObserverStatus="setObserverStatus" />
-		<div class="cardsContainer">
-			<Card v-for="item in items" :key="item.id" :item="item" />
-		</div>
-		<div v-if="isObserverActive">
-			<Observer @intersect="getProducts" />
+		<v-container class="lighten-5">
+			<v-row no-gutters>
+				<v-col v-for="item in items" :key="item.id" cols="12" md="4" sm="6">
+					<Card class="productCard" :item="item" />
+				</v-col>
+			</v-row>
+		</v-container>
+		<div v-if="isObserverActive && !isLastResponse">
+			<Observer @intersect="axiosGetProducts" />
 		</div>
 	</div>
 </template>
@@ -36,11 +40,12 @@ export default {
 
 	computed: {
 		...mapState({
-			items: (state) => state.products.all,
+			items: (state) => state.products.forShow,
+			isLastResponse: (state) => state.products.isLastResponse,
 		}),
 	},
 	methods: {
-		...mapActions("products", ["getProducts"]),
+		...mapActions("products", ["axiosGetProducts", "changeMode"]),
 		setObserverStatus(val) {
 			this.isObserverActive = val
 		},
@@ -49,9 +54,9 @@ export default {
 </script>
 
 <style lang="scss">
-.cardsContainer {
+/* .cardsContainer {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-}
+} */
 </style>

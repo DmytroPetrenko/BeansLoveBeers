@@ -2,10 +2,8 @@
 	<v-toolbar class="searchInput">
 		<v-autocomplete
 			v-model="select"
-			:loading="loading"
 			:items="allNames"
 			:search-input.sync="search"
-			@blur="loseFocus"
 			cache-items
 			class="mx-4"
 			flat
@@ -15,18 +13,22 @@
 			append-icon="mdi-magnify"
 			label="Search for beer..."
 		/>
-		<v-btn>Search</v-btn>
+		<div class="buttonsContainer">
+			<v-btn>Search</v-btn>
+			<v-btn @click="clearFounded">Clear</v-btn>
+		</div>
 	</v-toolbar>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import debounce from "lodash.debounce"
 export default {
 	data() {
 		return {
-			loading: false,
 			search: null,
 			select: null,
+			axiosGetByNameDebounced: null,
 		}
 	},
 	computed: {
@@ -42,15 +44,23 @@ export default {
 		},
 	},
 	methods: {
-		...mapActions("products", ["searchByName", "getProducts"]),
+		...mapActions("products", ["axiosGetByName", "changeMode"]),
 		querySelections(v) {
-			this.loading = true
-			this.searchByName(v)
-			this.loading = false
+			this.changeMode("foundProducts")
+			this.axiosGetByNameDebounced(v)
 		},
-		loseFocus() {
+		/* loseFocus() {
+			this.changeMode("all")
 			this.$emit("setObserverStatus", true)
+		}, */
+		clearFounded() {
+			this.changeMode("all")
+			this.search = null
+			this.select = null
 		},
+	},
+	created() {
+		this.axiosGetByNameDebounced = debounce(this.axiosGetByName, 1000)
 	},
 }
 </script>
@@ -66,6 +76,25 @@ export default {
 ::v-deep .v-toolbar__content {
 	* {
 		z-index: 0 !important;
+	}
+}
+
+@media screen and (max-width: 496px) {
+	.v-sheet.v-toolbar:not(.v-sheet--outlined) {
+		width: 100%;
+		border: 0;
+	}
+	.buttonsContainer {
+		display: flex;
+		flex-direction: column;
+		.v-btn {
+			padding: 0 2px !important;
+			height: 20px !important;
+			margin: 3px 0;
+		}
+		.v-btn.v-size--default {
+			font-size: 0.75rem;
+		}
 	}
 }
 </style>
