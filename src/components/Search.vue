@@ -2,16 +2,18 @@
 	<v-toolbar class="searchInput">
 		<v-autocomplete
 			v-model="select"
-			:items="allNames"
+			:items="allProductForSearch"
+			item-text="name"
+			item-value="name"
 			:search-input.sync="search"
-			cache-items
 			class="mx-4"
 			flat
 			solo
 			hide-no-data
 			hide-details
 			append-icon="mdi-magnify"
-			label="Search for beer..."
+			:label="searchInput"
+			@update:search-input="fetchGetByName"
 		/>
 		<div class="buttonsContainer">
 			<v-btn>Search</v-btn>
@@ -21,46 +23,54 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex"
+import { mapActions, mapState } from "vuex"
 import debounce from "lodash.debounce"
 export default {
 	data() {
 		return {
-			search: null,
-			select: null,
-			axiosGetByNameDebounced: null,
+			search: "",
+			select: [],
 		}
 	},
 	computed: {
-		...mapGetters("products", ["allNames"]),
+		...mapState("products", ["all"]),
+		searchInput() {
+			return this.$t("searchInput")
+		},
+		allProductForSearch: {
+			get() {
+				return [{ name: "", id: "finder" }, ...this.all]
+			},
+			set(value) {
+				value
+					? (this.allProductForSearch[0].name = value)
+					: (this.allProductForSearch[0].name = "")
+			},
+		},
 	},
 	watch: {
 		search(val) {
-			val && val.trim() && this.querySelections(val.trim())
-
-			val
-				? this.$emit("setObserverStatus", false)
-				: this.$emit("setObserverStatus", true)
+			this.allProductForSearch = val
+			const formattedValue = val?.trim()
+			if (formattedValue) {
+				this.changeMode("foundProducts")
+				this.$emit("setObserverStatus", false)
+				return
+			}
+			this.$emit("setObserverStatus", true)
 		},
 	},
 	methods: {
 		...mapActions("products", ["axiosGetByName", "changeMode"]),
-		querySelections(v) {
-			this.changeMode("foundProducts")
-			this.axiosGetByNameDebounced(v)
-		},
-		/* loseFocus() {
-			this.changeMode("all")
-			this.$emit("setObserverStatus", true)
-		}, */
+
 		clearFounded() {
 			this.changeMode("all")
-			this.search = null
-			this.select = null
 		},
-	},
-	created() {
-		this.axiosGetByNameDebounced = debounce(this.axiosGetByName, 1000)
+		fetchGetByName: debounce(function (value) {
+			if (value) {
+				this.axiosGetByName(value)
+			}
+		}, 350),
 	},
 }
 </script>
@@ -77,6 +87,10 @@ export default {
 	* {
 		z-index: 0 !important;
 	}
+}
+
+::v-deep .primary--text {
+	color: inherit !important;
 }
 
 @media screen and (max-width: 496px) {

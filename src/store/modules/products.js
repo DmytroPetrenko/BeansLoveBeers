@@ -14,9 +14,6 @@ const getters = {
 	isFavourites: (state) => (productId) => {
 		return state.favourites.find((product) => product.id === productId)
 	},
-	allNames: (state) => {
-		return state.all.map((obj) => obj.name)
-	},
 }
 
 const actions = {
@@ -34,11 +31,19 @@ const actions = {
 			console.log(error)
 		}
 	},
-	addToFavourites({ commit }, product) {
-		commit("addToFavouritesArray", product)
+	initLocalStorage({ state }) {
+		window.localStorage.setItem(
+			"productsId",
+			JSON.stringify(state.favourites.map((item) => item.id))
+		)
 	},
-	removeFromFavourites({ commit }, productId) {
+	addToFavourites({ commit, dispatch }, product) {
+		commit("addToFavouritesArray", product)
+		dispatch("initLocalStorage")
+	},
+	removeFromFavourites({ commit, dispatch }, productId) {
 		commit("removeFromFavouritesArray", productId)
+		dispatch("initLocalStorage")
 	},
 	async axiosGetByName({ commit }, input) {
 		try {
@@ -53,6 +58,21 @@ const actions = {
 	},
 	changeMode({ commit }, mode) {
 		commit("changeForShowValue", mode)
+	},
+	async getFromLocalStorage({ commit }) {
+		const productsId = JSON.parse(window.localStorage.getItem("productsId"))
+		if (productsId) {
+			try {
+				for (const id of productsId) {
+					const response = await axios.get(
+						`https://api.punkapi.com/v2/beers/${id}`
+					)
+					commit("addToFavouritesArray", response.data[0])
+				}
+			} catch (error) {
+				console.log(error)
+			}
+		}
 	},
 }
 
