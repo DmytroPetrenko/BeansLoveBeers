@@ -8,6 +8,7 @@ const state = () => ({
 	isLastResponse: false,
 	perPage: 24,
 	mode: "all",
+	activeProduct: { name: "Name" },
 })
 
 const getters = {
@@ -74,6 +75,22 @@ const actions = {
 			}
 		}
 	},
+	async fetchProductById({ commit }, id) {
+		try {
+			const response = await axios.get(`https://api.punkapi.com/v2/beers/${id}`)
+			commit("addActiveProduct", response.data[0])
+		} catch (error) {
+			console.log(error)
+		}
+	},
+	setActiveProduct({ commit, state, dispatch }, id) {
+		const prod = state.all.find((product) => product.id == id)
+		if (prod) {
+			commit("addActiveProduct", prod)
+		} else {
+			dispatch("fetchProductById", id)
+		}
+	},
 }
 
 const mutations = {
@@ -108,6 +125,9 @@ const mutations = {
 		mode === "all"
 			? (state.forShow = state.all)
 			: (state.forShow = state.foundProducts)
+	},
+	addActiveProduct(state, product) {
+		state.activeProduct = product
 	},
 }
 

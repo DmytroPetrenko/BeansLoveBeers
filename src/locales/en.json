@@ -4,5 +4,11 @@
 	"menu": {
 		"home": "Home",
 		"favourites": "Favourites"
+	},
+	"product": {
+		"buy_btn": "Buy",
+		"characteristics": "Characteristics",
+		"description": "Description",
+		"contributed_by": "Contributed by"
 	}
 }

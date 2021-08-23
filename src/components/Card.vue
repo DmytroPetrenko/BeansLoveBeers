@@ -1,5 +1,10 @@
 <template>
-	<v-card class="overflow-hidden" outlinedx max-height="200px">
+	<v-card
+		class="overflow-hidden"
+		outlinedx
+		max-height="200px"
+		@click="cardClickHandler"
+	>
 		<v-icon @click="addOrRemoveFavouritesProduct" color="cyan">{{
 			icon
 		}}</v-icon>
@@ -27,6 +32,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import router from "@/router/index"
+import routeNames from "@/router/routeNames"
 export default {
 	data() {
 		return {
@@ -49,6 +56,12 @@ export default {
 				this.icon = "mdi-star-outline"
 				this.removeFromFavourites(this.item.id)
 			}
+		},
+		cardClickHandler() {
+			router.push({
+				name: routeNames.productPage,
+				params: { id: this.item.id },
+			})
 		},
 	},
 	mounted() {

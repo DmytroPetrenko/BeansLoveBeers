@@ -4,5 +4,11 @@
 	"menu": {
 		"home": "Главная",
 		"favourites": "Избранное"
+	},
+	"product": {
+		"buy_btn": "Купить",
+		"characteristics": "Характеристики",
+		"description": "Описание",
+		"contributed_by": "Продавец"
 	}
 }
