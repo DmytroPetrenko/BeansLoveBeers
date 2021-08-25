@@ -10,7 +10,7 @@
 </template>
 <script>
 export default {
-	props:  ["list"],
+	props: { list: { type: Object, required: true } },
 }
 </script>
 

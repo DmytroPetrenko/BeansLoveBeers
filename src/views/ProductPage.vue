@@ -108,7 +108,7 @@ export default {
 				"ph",
 				"attenuation_level",
 			]
-			let objCopy = {}
+			const objCopy = {}
 			for (const key in this.activeProduct) {
 				const value = this.activeProduct[key]
 				if (propsNamesForCheck.includes(key)) {

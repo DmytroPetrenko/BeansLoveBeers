@@ -33,7 +33,7 @@ import { mapActions, mapGetters } from "vuex"
 import router from "@/router/index"
 import routeNames from "@/router/routeNames"
 export default {
-	props: ["item"],
+	props: { item: { type: Object, required: true } },
 	computed: {
 		...mapGetters("products", ["isFavourites"]),
 		icon() {
