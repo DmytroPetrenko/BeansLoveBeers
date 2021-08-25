@@ -64,12 +64,13 @@ const actions = {
 		const productsId = JSON.parse(window.localStorage.getItem("productsId"))
 		if (productsId) {
 			try {
+				let url = "https://api.punkapi.com/v2/beers?ids="
 				for (const id of productsId) {
-					const response = await axios.get(
-						`https://api.punkapi.com/v2/beers/${id}`
-					)
-					commit("addToFavouritesArray", response.data[0])
+					url += `${id}|`
 				}
+				url = url.slice(0, -1)
+				const response = await axios.get(url)
+				commit("initFavouritesArray", response.data)
 			} catch (error) {
 				console.log(error)
 			}
@@ -105,6 +106,9 @@ const mutations = {
 	},
 	addToFavouritesArray(state, product) {
 		state.favourites.push(product)
+	},
+	initFavouritesArray(state, products) {
+		state.favourites = products
 	},
 	removeFromFavouritesArray(state, productId) {
 		state.favourites = state.favourites.filter(
