@@ -1,8 +1,11 @@
 <template>
-	<v-card class="overflow-hidden" outlinedx max-height="200px">
-		<v-icon @click="addOrRemoveFavouritesProduct" color="cyan">{{
-			icon
-		}}</v-icon>
+	<v-card
+		class="overflow-hidden"
+		outlinedx
+		max-height="200px"
+		@click="cardClickHandler"
+	>
+		<v-icon @click.stop="handleStarAction" color="cyan">{{ icon }}</v-icon>
 		<v-list-item>
 			<v-list-item-avatar tile size="100">
 				<v-img contain :src="item.image_url" />
@@ -27,34 +30,35 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import router from "@/router/index"
+import routeNames from "@/router/routeNames"
 export default {
-	data() {
-		return {
-			icon: "mdi-star-outline",
-		}
-	},
-	props: {
-		item: Object,
-	},
+	props: { item: { type: Object, required: true } },
 	computed: {
 		...mapGetters("products", ["isFavourites"]),
-	},
-	methods: {
-		...mapActions("products", ["addToFavourites", "removeFromFavourites"]),
-		addOrRemoveFavouritesProduct() {
-			if (this.icon == "mdi-star-outline") {
-				this.icon = "mdi-star"
-				this.addToFavourites(this.item)
+		icon() {
+			if (this.isFavourites(this.item.id)) {
+				return "mdi-star"
 			} else {
-				this.icon = "mdi-star-outline"
-				this.removeFromFavourites(this.item.id)
+				return "mdi-star-outline"
 			}
 		},
 	},
-	mounted() {
-		if (this.isFavourites(this.item.id)) {
-			this.icon = "mdi-star"
-		}
+	methods: {
+		...mapActions("products", ["addToFavourites", "removeFromFavourites"]),
+		handleStarAction() {
+			if (!this.isFavourites(this.item.id)) {
+				this.addToFavourites(this.item)
+			} else {
+				this.removeFromFavourites(this.item.id)
+			}
+		},
+		cardClickHandler() {
+			router.push({
+				name: routeNames.productPage,
+				params: { id: this.item.id },
+			})
+		},
 	},
 }
 </script>
