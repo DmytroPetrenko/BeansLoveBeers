@@ -5,9 +5,7 @@
 		max-height="200px"
 		@click="cardClickHandler"
 	>
-		<v-icon @click="addOrRemoveFavouritesProduct" color="cyan">{{
-			icon
-		}}</v-icon>
+		<v-icon @click.stop="handleStarAction" color="cyan">{{ icon }}</v-icon>
 		<v-list-item>
 			<v-list-item-avatar tile size="100">
 				<v-img contain :src="item.image_url" />
@@ -35,25 +33,23 @@ import { mapActions, mapGetters } from "vuex"
 import router from "@/router/index"
 import routeNames from "@/router/routeNames"
 export default {
-	data() {
-		return {
-			icon: "mdi-star-outline",
-		}
-	},
-	props: {
-		item: Object,
-	},
+	props: ["item"],
 	computed: {
 		...mapGetters("products", ["isFavourites"]),
+		icon() {
+			if (this.isFavourites(this.item.id)) {
+				return "mdi-star"
+			} else {
+				return "mdi-star-outline"
+			}
+		},
 	},
 	methods: {
 		...mapActions("products", ["addToFavourites", "removeFromFavourites"]),
-		addOrRemoveFavouritesProduct() {
-			if (this.icon == "mdi-star-outline") {
-				this.icon = "mdi-star"
+		handleStarAction() {
+			if (!this.isFavourites(this.item.id)) {
 				this.addToFavourites(this.item)
 			} else {
-				this.icon = "mdi-star-outline"
 				this.removeFromFavourites(this.item.id)
 			}
 		},
@@ -63,11 +59,6 @@ export default {
 				params: { id: this.item.id },
 			})
 		},
-	},
-	mounted() {
-		if (this.isFavourites(this.item.id)) {
-			this.icon = "mdi-star"
-		}
 	},
 }
 </script>

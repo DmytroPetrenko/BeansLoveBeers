@@ -56,9 +56,6 @@
 								</v-card>
 							</v-tab-item>
 						</v-tabs-items>
-
-						<!-- <h3 class="mmat-5">{{ $t("product.characteristics") }}</h3>
-						<DescriptionList class="mmat-2" :list="productDescriptionObj" /> -->
 					</v-col>
 				</v-row>
 			</v-container>
@@ -101,8 +98,23 @@ export default {
 			]
 		},
 		productDescriptionObj() {
-			let objCopy = Object.assign({}, this.activeProduct)
-			objCopy = this.spliceOnObj(objCopy, 6, 8)
+			const propsNamesForCheck = [
+				"abv",
+				"ibu",
+				"target_fg",
+				"target_og",
+				"ebc",
+				"srm",
+				"ph",
+				"attenuation_level",
+			]
+			let objCopy = {}
+			for (const key in this.activeProduct) {
+				const value = this.activeProduct[key]
+				if (propsNamesForCheck.includes(key)) {
+					Object.assign(objCopy, { [key]: value })
+				}
+			}
 			return objCopy
 		},
 	},
@@ -110,19 +122,6 @@ export default {
 		...mapActions("products", ["fetchProductById", "setActiveProduct"]),
 		buy_btnHandler() {
 			console.log("buy_btn handler")
-		},
-		spliceOnObj(object, number, number2) {
-			let newObj = {}
-
-			if (!number2) {
-				number2 = 1
-			}
-			Object.entries(object).forEach(function ([key, item], index) {
-				if (index >= number && index - number < number2) {
-					newObj[key] = item
-				}
-			})
-			return newObj
 		},
 	},
 	created() {
